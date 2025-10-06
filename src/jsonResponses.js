@@ -1,5 +1,40 @@
-// function to respond
-const users = {};
+// Read the book json file
+const fs = require('fs');
+
+const books = fs.readFileSync(`${__dirname}/../client/books.json`);
+
+// We'll only be using author, language, title, year, and genre
+// So we'll populate those variables to start
+let authors = {};
+let languages = {};
+let titles = {};
+let years = {};
+let genres = {};
+const booksMade = {};
+
+books.forEach((item) => {
+  // so we can populate the book object
+  const {
+    aut, lan, tit, yr, gen,
+  } = [item.author, item.language, item.title, item.year, item.genre];
+
+  authors += aut;
+  languages += lan;
+  titles += tit;
+  years += yr;
+  // assess if we already have that genre as an option
+  if (genres[gen] === gen){
+    genres += gen;
+  }
+
+  booksMade[item.title] = {
+    aut,
+    lan,
+    tit,
+    yr,
+    gen,
+  };
+});
 
 const respondJSON = (request, response, status, object) => {
   const content = JSON.stringify(object);
@@ -16,10 +51,14 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
-const getUsers = (request, response) => {
+const getBookData = (request, response) => {
   if (request.method === 'GET') {
     const results = {
-      users,
+      authors,
+      languages,
+      titles,
+      years,
+      genres,
     };
 
     return respondJSON(request, response, 200, results);
@@ -30,7 +69,96 @@ const getUsers = (request, response) => {
   }
 
   return respondJSON(request, response, 404, {
-    message: 'Enter a proper Name or Age!!',
+    message: 'Page can not parse data!!',
+    id: 'error',
+  });
+};
+
+const getAuthors = (request, response) => {
+  if (request.method === 'GET') {
+    const results = {
+      authors,
+    };
+
+    return respondJSON(request, response, 200, results);
+  }
+
+  if (request.method === 'HEAD') {
+    return respondJSON(request, response, 200, {});
+  }
+
+  return respondJSON(request, response, 404, {
+    message: 'Author not found',
+    id: 'error',
+  });
+};
+
+const getTitles = (request, response) => {
+  if (request.method === 'GET') {
+    const results = {
+      titles,
+    };
+
+    return respondJSON(request, response, 200, results);
+  }
+
+  if (request.method === 'HEAD') {
+    return respondJSON(request, response, 200, {});
+  }
+
+  return respondJSON(request, response, 404, {
+    message: 'Title not found',
+    id: 'error',
+  });
+};
+
+// Taken code from "https://stackoverflow.com/questions/19259233/sorting-json-by-specific-element-alphabetically"
+// Stack Overflow
+// sorts aplhabetically into function
+
+const getBook = (request, response) => {
+  if (request.method === 'GET') {
+    // checks each book and see if it contains the title
+    const results = {};
+    const title = request.title;
+    // checks each book and checks if it includes the
+    // requested title and the genre/year range
+    books.forEach((book) => {
+      if (book.year >= 0) {
+        results[title] = [
+          book.title,
+          book.author,
+          book.genre,
+          book.year,
+          book.language,
+        ];
+      } else if (book[title] === (title)) {
+        results[title] = [
+          book.title,
+          book.author,
+          book.genre,
+          book.year,
+          book.language,
+        ];
+      }
+    });
+
+    // results.sort((a, b) => {
+    //   a = a.title.toLowerCase();
+    //   b = b.title.toLowerCase();
+
+    //   return a < b ? -1 : a > b ? 1 : 0;
+    // });
+
+    return respondJSON(request, response, 200, results);
+  }
+
+  if (request.method === 'HEAD') {
+    return respondJSON(request, response, 200, {});
+  }
+
+  return respondJSON(request, response, 404, {
+    message: 'Title not found',
     id: 'error',
   });
 };
@@ -42,22 +170,22 @@ const notReal = (request, response) => {
       id: 'notFound',
     };
 
-    return respondJSON(request, response, 404, (results));
+    return respondJSON(request, response, 404, results);
   }
 
   return respondJSON(request, response, 404, {});
 };
 
-const addUser = (request, response) => {
+const addBook = (request, response) => {
   const responseJSON = {
-    message: 'Name and age are both required.',
+    message: 'Title, Author, and Year are at LEAST required.',
   };
 
   // grab name and age out of request.body
-  const { name, age } = request.body;
+  const { title, year, author } = request.body;
 
   // check to make sure we have both fields
-  if (!name || !age) {
+  if (!title || !year || !author) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
@@ -66,16 +194,19 @@ const addUser = (request, response) => {
   let responseCode = 204;
 
   // If the user doesn't exist yet
-  if (!users[name]) {
+  if (!books[title]) {
     // Set the status code to 201 (created) and create an empty user
     responseCode = 201;
-    users[name] = {
-      name,
+    books[title] = {
+      title,
+      year,
+      author,
     };
   }
 
   // add or update fields for this user name
-  users[name].age = age;
+  books[title].year = year;
+  books[title].author = author;
 
   // if response is created, then set our created message
   // and sent response with a message
@@ -89,7 +220,10 @@ const addUser = (request, response) => {
 };
 
 module.exports = {
-  getUsers,
-  addUser,
+  getAuthors,
+  addBook,
   notReal,
+  getBookData,
+  getBook,
+  getTitles,
 };

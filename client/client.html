@@ -38,18 +38,19 @@
       if (obj.message) {
         content.innerHTML += `<p>${obj.message}</p>`;
       }
-      if (obj.response) {
-        content.innerHTML += `\n<p>${obj.response}</p>`;
+      console.log(JSON.stringify(obj));
+      if (obj.users) {
+        content.innerHTML += `\n<p>${JSON.stringify(obj.users)}</p>`;
       }
     };
 
-    const sendPost = async (nameForm) => {
-      const url = nameForm.getAttribute('action');
-      const method = nameForm.getAttribute('method');
-      const age = nameForm.querySelector('#ageField')
-      const name = nameForm.querySelector('#nameField');
+    const sendPost = async (bookForm) => {
+      const url = bookForm.getAttribute('action');
+      const method = bookForm.getAttribute('method');
+      const title = bookForm.querySelector('#titleField')
+      const name = bookForm.querySelector('#authorField');
 
-      const formData = `name=${name.value}&age=${age.value}`;
+      const formData = `author=${name.value}&title=${title.value}`;
 
       const response = await fetch(url, {
         method: method,
@@ -79,23 +80,23 @@
 
     const init = () => {
 
-      const nameForm = document.querySelector('#nameForm');
+      const bookForm = document.querySelector('#bookForm');
       const userForm = document.querySelector('#userForm');
 
-      const addUser = (e) => {
+      const addBook = (e) => {
         e.preventDefault();
-        sendPost(nameForm);
+        sendPost(bookForm);
         return false;
       }
 
-      const getUsers = (e) => {
+      const getBooks = (e) => {
         e.preventDefault();
         getPost(userForm);
         return false;
       }
 
-      nameForm.addEventListener('submit', addUser);
-      userForm.addEventListener('submit', getUsers);
+      bookForm.addEventListener('submit', addBook);
+      userForm.addEventListener('submit', getBooks);
     };
 
     window.onload = init;
@@ -105,23 +106,29 @@
 <body>
   <section id="top">
     <h3>POST Status Code Tests</h3>
-    <form id="nameForm" action="/addUser" method="post">
-      <label for="name">Name: </label>
-      <input id="nameField" type="text" name="name" />
-      <label for="age">Age: </label>
-      <input id="ageField" type="number" name="age" min="0" max="100" step="1" />
-      <input type="submit" value="Add User" />
-    </form>
-    <form id="userForm" action="/getUsers" method="get">
+    <form id="bookForm" action="/addBook" method="post">
+      <label for="author">Author: </label>
+      <input id="authorField" type="text" name="author" />
+      <label for="title">Title: </label>
+      <input id="titleField"  />
+      <label for="year">Year: </label>
       <select id='urlField'>
-        <option value='/getUsers'>/getUsers</option>
+        <option value='1000'>+1000</option>
+        <option value='-600'>-600</option>
+      </select>
+      <input type="submit" value="Add Book" />
+
+    </form>
+    <form id="userForm" action="/getBook" method="get">
+      <select id='urlField'>
+        <option value='/getBook'>/getBooks</option>
         <option value='/notReal'>/notReal</option>
       </select>
       <select id="methodSelect">
         <option value="get">GET</option>
         <option value="head">HEAD</option>
       </select>
-      <input type="submit" value="Get User" />
+      <input type="submit" value="Get Books" />
     </form>
   </section>
   <section id="content">

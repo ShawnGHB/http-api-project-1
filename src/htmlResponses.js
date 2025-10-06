@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const css = fs.readFileSync(`${__dirname}/../client/style.css`);
+const books = fs.readFileSync(`${__dirname}/../client/books.json`);
 
 const respond = (request, response, content, type) => {
   // set status code (200 success) and content type
@@ -19,5 +20,8 @@ const getIndex = (request, response) => respond(request, response, index, 'text/
 
 const getCSS = (request, response) => respond(request, response, css, 'text/css');
 
+const getJSON = (request, response) => respond(request, response, books, 'application/javascript');
+
 module.exports.getIndex = getIndex;
 module.exports.getCSS = getCSS;
+module.exports.getJSON = getJSON;

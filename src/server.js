@@ -32,9 +32,9 @@ const parseBody = (request, response, handler) => {
 // POST handler
 const handlePost = (request, response, parsedUrl) => {
   // addUser
-  if (parsedUrl.pathname === '/addUser') {
+  if (parsedUrl.pathname === '/addBook') {
     // Call our below parseBody handler
-    parseBody(request, response, jsonHandler.addUser);
+    parseBody(request, response, jsonHandler.addBook);
   }
 };
 
@@ -43,12 +43,18 @@ const handleGet = (request, response, parsedUrl) => {
   // route to correct method based on URL
   if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
-  } else if (parsedUrl.pathname === '/getUsers') {
-    jsonHandler.getUsers(request, response);
+  } else if (parsedUrl.pathname === '/getAuthors') {
+    jsonHandler.getAuthors(request, response);
+  }  else if (parsedUrl.pathname === '/getBookData') {
+    jsonHandler.getBookData(request, response);
+  } else if (parsedUrl.pathname === '/getBook') {
+    jsonHandler.getBook(request, response);
   } else if (parsedUrl.pathname === '/notReal') {
     jsonHandler.notReal(request, response);
-  } else if (parsedUrl.pathname === '/') {
-    htmlHandler.getIndex(request, response);
+  } else if (parsedUrl.pathname === '/getTitles') {
+    jsonHandler.getTitles(request, response);
+  } else if (parsedUrl.pathname === '/books.json') {
+    htmlHandler.getJSON(request, response);
   } else {
     jsonHandler.notReal(request, response);
   }

@@ -2,7 +2,7 @@
   "name": "book-api",
   "version": "1.0.0",
   "description": "A book api that allows users to add notes/bookmarks favorite books",
-  "main": "node ./src/server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
