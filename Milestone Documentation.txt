@@ -1,0 +1,12 @@
+Milestone Documentation
+-----------------------
+What dataset are you using?
+
+● What work has been completed for this milestone?
+
+● What work is left, and how do you plan to complete it?
+
+● Do you have a plan for going above and beyond? If so, what is it?
+
+● If you used any borrowed code or code fragments, where did you get them from?
+What do the code fragments do? Where are they in your code?
