@@ -38,9 +38,9 @@
       if (obj.message) {
         content.innerHTML += `<p>${obj.message}</p>`;
       }
-      console.log(JSON.stringify(obj));
-      if (obj.title) {
-        content.innerHTML += `\n<p>${JSON.stringify(obj.users)}</p>`;
+      console.log(JSON.stringify(obj.booksMade));
+      if (obj.booksMade) {
+        content.innerHTML += `\n<p>${JSON.stringify(obj.booksMade)}</p>`;
       }
     };
 
