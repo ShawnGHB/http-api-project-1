@@ -55,6 +55,8 @@ const handleGet = (request, response, parsedUrl) => {
     jsonHandler.getTitles(request, response);
   } else if (parsedUrl.pathname === '/books.json') {
     htmlHandler.getJSON(request, response);
+  } else if (parsedUrl.pathname === '/') {
+    htmlHandler.getIndex(request, response);
   } else {
     jsonHandler.notReal(request, response);
   }
