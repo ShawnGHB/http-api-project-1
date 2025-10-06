@@ -5,26 +5,31 @@ const books = fs.readFileSync(`${__dirname}/../client/books.json`);
 
 // We'll only be using author, language, title, year, and genre
 // So we'll populate those variables to start
-let authors = {};
-let languages = {};
-let titles = {};
-let years = {};
-let genres = {};
+const authors = [];
+const languages = [];
+const titles = [];
+const years = [];
+const genres = [];
 const booksMade = {};
 
-books.forEach((item) => {
+JSON.parse(books).forEach((item) => {
   // so we can populate the book object
-  const {
-    aut, lan, tit, yr, gen,
-  } = [item.author, item.language, item.title, item.year, item.genre];
+  const aut = item.author;
+  const lan = item.language;
+  const tit = item.title;
+  const yr = item.year;
+  const gen = item.genres;
 
-  authors += aut;
-  languages += lan;
-  titles += tit;
-  years += yr;
+  // add to arrays for populating pages
+  authors.push(aut);
+  languages.push(lan);
+  titles.push(tit);
+  years.push(yr);
   // assess if we already have that genre as an option
-  if (genres[gen] === gen){
-    genres += gen;
+  //not all books have genres, may apply this check for all optional parameters
+  
+  if (item.genres) {
+    gen.forEach((genre) => { if (!genres.includes(genre)) { genres.push(genre); } });
   }
 
   booksMade[item.title] = {
@@ -120,7 +125,7 @@ const getBook = (request, response) => {
   if (request.method === 'GET') {
     // checks each book and see if it contains the title
     const results = {};
-    const title = request.title;
+    const { title } = request;
     // checks each book and checks if it includes the
     // requested title and the genre/year range
     books.forEach((book) => {

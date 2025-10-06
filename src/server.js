@@ -45,7 +45,7 @@ const handleGet = (request, response, parsedUrl) => {
     htmlHandler.getCSS(request, response);
   } else if (parsedUrl.pathname === '/getAuthors') {
     jsonHandler.getAuthors(request, response);
-  }  else if (parsedUrl.pathname === '/getBookData') {
+  } else if (parsedUrl.pathname === '/getBookData') {
     jsonHandler.getBookData(request, response);
   } else if (parsedUrl.pathname === '/getBook') {
     jsonHandler.getBook(request, response);
