@@ -39,7 +39,7 @@
         content.innerHTML += `<p>${obj.message}</p>`;
       }
       console.log(JSON.stringify(obj));
-      if (obj.users) {
+      if (obj.title) {
         content.innerHTML += `\n<p>${JSON.stringify(obj.users)}</p>`;
       }
     };
@@ -49,9 +49,10 @@
       const method = bookForm.getAttribute('method');
       const title = bookForm.querySelector('#titleField')
       const name = bookForm.querySelector('#authorField');
+      const year = bookForm.querySelector('#yearField');
 
-      const formData = `author=${name.value}&title=${title.value}`;
-
+      const formData = `author=${name.value}&title=${title.value}&year=${year.value}`;
+      console.log(formData);
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -112,10 +113,7 @@
       <label for="title">Title: </label>
       <input id="titleField"  />
       <label for="year">Year: </label>
-      <select id='yearField'>
-        <option value='1000'>+1000</option>
-        <option value='-600'>-600</option>
-      </select>
+      <input id="yearField"  />
       <input type="submit" value="Add Book" />
 
     </form>

@@ -1,7 +1,7 @@
 // Read the book json file
 const fs = require('fs');
 
-const books = fs.readFileSync(`${__dirname}/../client/books.json`);
+const books = JSON.parse(fs.readFileSync(`${__dirname}/../client/books.json`));
 
 // We'll only be using author, language, title, year, and genre
 // So we'll populate those variables to start
@@ -12,7 +12,7 @@ const years = [];
 const genres = [];
 const booksMade = {};
 
-JSON.parse(books).forEach((item) => {
+books.forEach((item) => {
   // so we can populate the book object
   const aut = item.author;
   const lan = item.language;
@@ -26,8 +26,8 @@ JSON.parse(books).forEach((item) => {
   titles.push(tit);
   years.push(yr);
   // assess if we already have that genre as an option
-  //not all books have genres, may apply this check for all optional parameters
-  
+  // not all books have genres, may apply this check for all optional parameters
+
   if (item.genres) {
     gen.forEach((genre) => { if (!genres.includes(genre)) { genres.push(genre); } });
   }
@@ -57,6 +57,7 @@ const respondJSON = (request, response, status, object) => {
 };
 
 const getBookData = (request, response) => {
+  //gives generic data list we'll use to populate forms
   if (request.method === 'GET') {
     const results = {
       authors,
@@ -124,29 +125,12 @@ const getTitles = (request, response) => {
 const getBook = (request, response) => {
   if (request.method === 'GET') {
     // checks each book and see if it contains the title
-    const results = {};
-    const { title } = request;
+    const results = {
+      booksMade
+    };
+
     // checks each book and checks if it includes the
     // requested title and the genre/year range
-    books.forEach((book) => {
-      if (book.year >= 0) {
-        results[title] = [
-          book.title,
-          book.author,
-          book.genre,
-          book.year,
-          book.language,
-        ];
-      } else if (book[title] === (title)) {
-        results[title] = [
-          book.title,
-          book.author,
-          book.genre,
-          book.year,
-          book.language,
-        ];
-      }
-    });
 
     // results.sort((a, b) => {
     //   a = a.title.toLowerCase();
@@ -187,7 +171,7 @@ const addBook = (request, response) => {
   };
 
   // grab name and age out of request.body
-  const { title, year, author } = request.body;
+  const { author, title, year } = request.body;
 
   // check to make sure we have both fields
   if (!title || !year || !author) {
@@ -199,10 +183,10 @@ const addBook = (request, response) => {
   let responseCode = 204;
 
   // If the user doesn't exist yet
-  if (!books[title]) {
+  if (!booksMade[title]) {
     // Set the status code to 201 (created) and create an empty user
     responseCode = 201;
-    books[title] = {
+    booksMade[title] = {
       title,
       year,
       author,
@@ -210,8 +194,8 @@ const addBook = (request, response) => {
   }
 
   // add or update fields for this user name
-  books[title].year = year;
-  books[title].author = author;
+  booksMade[title].year = year;
+  booksMade[title].author = author;
 
   // if response is created, then set our created message
   // and sent response with a message
