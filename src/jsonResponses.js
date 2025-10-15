@@ -1,14 +1,12 @@
 // Read the book json file
 const fs = require('fs');
+//we'll need a url variable for our parameters
+const url = require('url');
 
 const books = JSON.parse(fs.readFileSync(`${__dirname}/../client/books.json`));
 
 // We'll only be using author, language, title, year, and genre
 // So we'll populate those variables to start
-const authors = [];
-const languages = [];
-const titles = [];
-const years = [];
 const genres = [];
 const booksMade = {};
 
@@ -20,11 +18,6 @@ books.forEach((item) => {
   const yr = item.year;
   const gen = item.genres;
 
-  // add to arrays for populating pages
-  authors.push(aut);
-  languages.push(lan);
-  titles.push(tit);
-  years.push(yr);
   // assess if we already have that genre as an option
   // not all books have genres, may apply this check for all optional parameters
 
@@ -52,26 +45,24 @@ const respondJSON = (request, response, status, object) => {
   if (request.method !== 'HEAD' && status !== 204) {
     response.write(content);
   }
+  //console.log(response);
 
   response.end();
 };
 
 const getBookData = (request, response) => {
-  //gives generic data list we'll use to populate forms
-  if (request.method === 'GET') {
-    const results = {
-      authors,
-      languages,
-      titles,
-      years,
-      genres,
-    };
+  // gives generic data list we'll use to populate forms at startup
+  // GET method
+  if (request.method === ('GET') || request.method === ('HEAD')) {
+    const results = booksMade.map((book) => ({
+      author: book.aut,
+      language: book.lan,
+      titles: book.tit,
+      years: book.yr,
+      books: book.gen,
+    }));
 
     return respondJSON(request, response, 200, results);
-  }
-
-  if (request.method === 'HEAD') {
-    return respondJSON(request, response, 200, {});
   }
 
   return respondJSON(request, response, 404, {
@@ -81,16 +72,19 @@ const getBookData = (request, response) => {
 };
 
 const getAuthors = (request, response) => {
-  if (request.method === 'GET') {
-    const results = {
-      authors,
-    };
+  // Grabs a list of authors
+  if (request.method === ('GET') || request.method === ('HEAD')) {
+    const parsedUrl = url.parse(request.url, true);
+
+    const { author } = parsedUrl.query;
+    
+  // Do a check for if each parameter is even there and then filter by if they include given string value
+  //because we sort by title we have to start filtering based on entries and them return an object from that
+    const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
+    (!author || book.aut.includes(author))
+  ));
 
     return respondJSON(request, response, 200, results);
-  }
-
-  if (request.method === 'HEAD') {
-    return respondJSON(request, response, 200, {});
   }
 
   return respondJSON(request, response, 404, {
@@ -100,16 +94,19 @@ const getAuthors = (request, response) => {
 };
 
 const getTitles = (request, response) => {
-  if (request.method === 'GET') {
-    const results = {
-      titles,
-    };
+  // Grabs the titles
+  if (request.method === ('GET') || request.method === ('HEAD')) {
+    const parsedUrl = url.parse(request.url, true);
+
+    const { title } = parsedUrl.query;
+    
+  // Do a check for if each parameter is even there and then filter by if they include given string value
+  //because we sort by title we have to start filtering based on entries and them return an object from that
+    const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
+    (!title || tit.includes(title))
+  ));
 
     return respondJSON(request, response, 200, results);
-  }
-
-  if (request.method === 'HEAD') {
-    return respondJSON(request, response, 200, {});
   }
 
   return respondJSON(request, response, 404, {
@@ -121,13 +118,22 @@ const getTitles = (request, response) => {
 // Taken code from "https://stackoverflow.com/questions/19259233/sorting-json-by-specific-element-alphabetically"
 // Stack Overflow
 // sorts aplhabetically into function
-
+// GET Request
 const getBook = (request, response) => {
-  if (request.method === 'GET') {
-    // checks each book and see if it contains the title
-    const results = {
-      booksMade
-    };
+  if (request.method === ('HEAD') || request.method === ('GET')) {
+    // checks each book and see if it contains the title, year or author
+    //parse our params
+    const parsedUrl = url.parse(request.url, true);
+
+    const { author, title, year } = parsedUrl.query;
+    
+  // Do a check for if each parameter is even there and then filter by if they include given string value
+  //because we sort by title we have to start filtering based on entries and them return an object from that
+    const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
+    (!author || book.aut.includes(author)) &&
+    (!title || tit.includes(title)) &&
+    (!year || book.yr === year)
+  ));
 
     // checks each book and checks if it includes the
     // requested title and the genre/year range
@@ -139,11 +145,7 @@ const getBook = (request, response) => {
     //   return a < b ? -1 : a > b ? 1 : 0;
     // });
 
-    return respondJSON(request, response, 200, results);
-  }
-
-  if (request.method === 'HEAD') {
-    return respondJSON(request, response, 200, {});
+    return respondJSON(request, response, 200, {results});
   }
 
   return respondJSON(request, response, 404, {
@@ -153,7 +155,7 @@ const getBook = (request, response) => {
 };
 
 const notReal = (request, response) => {
-  if (request.method === 'GET') {
+  if (request.method === ('GET') || request.method === ('HEAD')) {
     const results = {
       message: 'The page you are looking for was not found!!',
       id: 'notFound',
@@ -165,9 +167,10 @@ const notReal = (request, response) => {
   return respondJSON(request, response, 404, {});
 };
 
+// POST REQUEST
 const addBook = (request, response) => {
   const responseJSON = {
-    message: 'Title, Author, and Year are at LEAST required.',
+    message: 'Title, Author, and Year are required.',
   };
 
   // grab name and age out of request.body
@@ -187,15 +190,52 @@ const addBook = (request, response) => {
     // Set the status code to 201 (created) and create an empty user
     responseCode = 201;
     booksMade[title] = {
-      title,
-      year,
-      author,
+      'tit': title,
+      'yr': year,
+      'aut': author,
     };
   }
 
   // add or update fields for this user name
   booksMade[title].year = year;
   booksMade[title].author = author;
+
+  // if response is created, then set our created message
+  // and sent response with a message
+  if (responseCode === 201) {
+    responseJSON.message = 'Created Successfully';
+    return respondJSON(request, response, responseCode, responseJSON);
+  }
+
+  // When we send back a 204 status code
+  return respondJSON(request, response, responseCode, {});
+};
+
+// POST REQUEST
+const addGenres = (request, response) => {
+  const responseJSON = {
+    message: 'Enter a title(case sensitive) and a comma separated list of genres.',
+  };
+
+  // grab genres out of request.body, should be a title and a comma separated array of genres
+  const { title, gens } = request.body;
+
+  // check to make sure we have both fields
+  if (gens.length === 0 || !title) {
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  //checks if title is actually in the list
+  if(!booksMade[title]){
+    respondJSON.id = "Book doesn't exist";
+    return respondJSON(request, response, 404, responseJSON)
+  }
+  
+  // default status code if updating existing
+  const responseCode = 204;
+  // add or update fields for this genre
+  booksMade[title].gen = gens;
 
   // if response is created, then set our created message
   // and sent response with a message
@@ -215,4 +255,5 @@ module.exports = {
   getBookData,
   getBook,
   getTitles,
+  addGenres,
 };

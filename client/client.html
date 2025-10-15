@@ -35,12 +35,15 @@
       const obj = await response.json();
 
       //If we have a message, display it.
+      if (response.status) {
+        content.innerHTML += `<p>${response.status}</p>`;
+      }
       if (obj.message) {
         content.innerHTML += `<p>${obj.message}</p>`;
       }
-      console.log(JSON.stringify(obj.booksMade));
-      if (obj.booksMade) {
-        content.innerHTML += `\n<p>${JSON.stringify(obj.booksMade)}</p>`;
+      console.log(JSON.stringify(obj.results));
+      if (obj.results) {
+        content.innerHTML += `\n<p>${JSON.stringify(obj.results)}</p>`;
       }
     };
 
@@ -52,7 +55,7 @@
       const year = bookForm.querySelector('#yearField');
 
       const formData = `author=${name.value}&title=${title.value}&year=${year.value}`;
-      console.log(formData);
+
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -65,15 +68,28 @@
     }
 
     const getPost = async (userForm) => {
-      const url = document.querySelector('#urlField').value;
+      let url = document.querySelector('#urlField').value;
       const method = userForm.querySelector('#methodSelect').value;
+      //We'll have multiple forms but default getBooks does this
+      const bookForm = document.querySelector('#bookForm');
 
+      const title = bookForm.querySelector('#titleField')
+      const name = bookForm.querySelector('#authorField');
+      const year = bookForm.querySelector('#yearField');
+
+      //Takes Form Data adds it to the query params/body content
+      const formData = `?author=${encodeURIComponent(name.value)}&title=${encodeURIComponent(title.value)}&year=${encodeURIComponent(year.value)}`;
+      url += formData;
+
+      console.log(formData);
+      console.log(method);
       const response = await fetch(url, {
         method: method,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Accept': 'application/json',
-        }
+        },
+
       });
       handleResponse(response);
     }
@@ -90,13 +106,31 @@
         return false;
       }
 
+      const addGenre = (e) => {
+        e.preventDefault();
+        sendPost(bookForm);
+        return false;
+      }
+
       const getBooks = (e) => {
         e.preventDefault();
         getPost(userForm);
         return false;
       }
 
-      bookForm.addEventListener('submit', addBook);
+      const getTitles = (e) => {
+        e.preventDefault();
+        getPost(userForm);
+        return false;
+      }
+
+      const getAuthors = (e) => {
+        e.preventDefault();
+        getPost(userForm);
+        return false;
+      }
+
+      document.querySelectorAll("form").forEach()
       userForm.addEventListener('submit', getBooks);
     };
 
@@ -105,29 +139,132 @@
 </head>
 
 <body>
-  <section id="top">
-    <h3>POST Status Code Tests</h3>
-    <form id="bookForm" action="/addBook" method="post">
-      <label for="author">Author: </label>
-      <input id="authorField" type="text" name="author" />
-      <label for="title">Title: </label>
-      <input id="titleField"  />
-      <label for="year">Year: </label>
-      <input id="yearField"  />
-      <input type="submit" value="Add Book" />
+  <section id="column">
+    <section id="add">
+      <h3>Get Books</h3>
+      <!--Optional Params, returns all books-->
+      <form class="form" action="/addBook" method="post">
+        <label for="author">Author: </label>
+        <input id="authorField" type="text" name="author" />
+        <label for="title">Title: </label>
+        <input id="titleField" />
+        <label for="year">Year: </label>
+        <input id="yearField" />
+        <input type="submit" value="Add Book" />
 
-    </form>
-    <form id="userForm" action="/getBook" method="get">
-      <select id='urlField'>
-        <option value='/getBook'>/getBooks</option>
-        <option value='/notReal'>/notReal</option>
-      </select>
-      <select id="methodSelect">
-        <option value="get">GET</option>
-        <option value="head">HEAD</option>
-      </select>
-      <input type="submit" value="Get Books" />
-    </form>
+      </form>
+      <form id="userForm" action="/getBook" method="get">
+        <select id='urlField'>
+          <option value='/getBook'>/getBooks</option>
+          <option value='/notReal'>/notReal</option>
+        </select>
+        <select id="methodSelect">
+          <option value="GET">GET</option>
+          <option value="HEAD">HEAD</option>
+        </select>
+        <input type="submit" value="Get Books" />
+      </form>
+    </section>
+
+
+    <section id="get">
+      <h3>Get Titles</h3>
+      <!--Optional Param(s): title, returns only book Titles-->
+      <form id="bookForm" action="/addBook" method="post">
+        <label for="author">Title: </label>
+        <input id="titleField" type="text" name="title" />
+        <input type="submit" value="Add Book" />
+
+      </form>
+      <form id="userForm" action="/getBook" method="get">
+        <select id='urlField'>
+          <option value='/getBook'>/getBooks</option>
+          <option value='/notReal'>/notReal</option>
+        </select>
+        <select id="methodSelect">
+          <option value="GET">GET</option>
+          <option value="HEAD">HEAD</option>
+        </select>
+        <input type="submit" value="Get Books" />
+      </form>
+    </section>
+
+
+    <section id="add">
+      <h3>Get Authors</h3>
+      <!--Optional Param(s): author, returns only book Authors-->
+      <form id="bookForm" action="/addBook" method="post">
+        <label for="author">Title: </label>
+        <input id="authorField" type="text" name="title" />
+
+        <input type="submit" value="Add Book" />
+
+      </form>
+      <form id="userForm" action="/getBook" method="get">
+        <select id='urlField'>
+          <option value='/getBook'>/getBooks</option>
+          <option value='/notReal'>/notReal</option>
+        </select>
+        <select id="methodSelect">
+          <option value="GET">GET</option>
+          <option value="HEAD">HEAD</option>
+        </select>
+        <input type="submit" value="Get Books" />
+      </form>
+    </section>
+
+    <section id="add">
+      <h3>Show Books</h3>
+      <!--Optional Param(s): none, Shows all Books-->
+      </form>
+      <form id="userForm" action="/getBook" method="get">
+        <select id='urlField'>
+          <option value='/getBook'>/getBooks</option>
+          <option value='/notReal'>/notReal</option>
+        </select>
+        <select id="methodSelect">
+          <option value="GET">GET</option>
+          <option value="HEAD">HEAD</option>
+        </select>
+        <input type="submit" value="Get Books" />
+      </form>
+    </section>
+
+    <section id="add">
+      <h3>Add Book</h3>
+      <!--Optional Param(s): none, Shows all Books-->
+      </form>
+      <form id="bookForm" action="/addBook" method="post">
+        <label for="author">Author: </label>
+        <input id="authorField" type="text" name="author" />
+        <label for="title">Title: </label>
+        <input id="titleField" />
+        <label for="year">Year: </label>
+        <input id="yearField" />
+
+
+        <input type="submit" value="Add Book" />
+
+      </form>
+
+
+      <section id="add">
+
+        <h3>Give Genre</h3>
+        <!--Let's users give genre to specific title-->
+        </form>
+        <form id="bookForm" action="/addBook" method="post">
+          <label for="title">Title: </label>
+          <input id="titleField" />
+          <label for="author">Genre(s): </label>
+          <input id="genreField" type="text" name="genres" />
+
+          <input type="submit" value="Add Book" />
+
+        </form>
+
+      </section>
+    </section>
   </section>
   <section id="content">
   </section>

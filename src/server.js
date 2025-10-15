@@ -53,6 +53,8 @@ const handleGet = (request, response, parsedUrl) => {
     jsonHandler.notReal(request, response);
   } else if (parsedUrl.pathname === '/getTitles') {
     jsonHandler.getTitles(request, response);
+  } else if (parsedUrl.pathname === '/addGenres') {
+    jsonHandler.addGenres(request, response);
   } else if (parsedUrl.pathname === '/books.json') {
     htmlHandler.getJSON(request, response);
   } else if (parsedUrl.pathname === '/') {

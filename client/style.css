@@ -5,17 +5,29 @@ html, body {
   padding: 0;
 }
 
-#top {
+#get {
   text-align: center;
   margin: 0 auto;
 }
 
-#top h1 {
+#get h1 {
   font-size: 2em;
+}
+
+#column{
+  display: flex;
+  flex-direction: column;
+  grid-column: 1;
 }
 
 #content {
   margin-top: 100px;
   font-size: 2em;
   text-align: center;
+  grid-column: 2;
+}
+
+body{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
