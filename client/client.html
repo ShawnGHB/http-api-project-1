@@ -67,9 +67,10 @@
       handleResponse(response);
     }
 
-    const getPost = async (userForm) => {
+    const getPost = async (getForm) => {
       let url = document.querySelector('#urlField').value;
       const method = userForm.querySelector('#methodSelect').value;
+
       //We'll have multiple forms but default getBooks does this
       const bookForm = document.querySelector('#bookForm');
 
@@ -98,6 +99,10 @@
     const init = () => {
 
       const bookForm = document.querySelector('#bookForm');
+      const titleForm = document.querySelector('#titleForm');
+      const genreForm = document.querySelector('#genreForm');
+      const authorForm = document.querySelector('#authorForm');
+
       const userForm = document.querySelector('#userForm');
 
       const addBook = (e) => {
@@ -108,7 +113,7 @@
 
       const addGenre = (e) => {
         e.preventDefault();
-        sendPost(bookForm);
+        sendPost(genreForm);
         return false;
       }
 
@@ -120,13 +125,13 @@
 
       const getTitles = (e) => {
         e.preventDefault();
-        getPost(userForm);
+        getPost(titleForm);
         return false;
       }
 
       const getAuthors = (e) => {
         e.preventDefault();
-        getPost(userForm);
+        getPost(authorForm);
         return false;
       }
 
@@ -143,14 +148,13 @@
     <section id="add">
       <h3>Get Books</h3>
       <!--Optional Params, returns all books-->
-      <form class="form" action="/addBook" method="post">
+      <form class="form" action="/addBook" method="get">
         <label for="author">Author: </label>
         <input id="authorField" type="text" name="author" />
         <label for="title">Title: </label>
         <input id="titleField" />
         <label for="year">Year: </label>
         <input id="yearField" />
-        <input type="submit" value="Add Book" />
 
       </form>
       <form id="userForm" action="/getBook" method="get">
@@ -170,10 +174,9 @@
     <section id="get">
       <h3>Get Titles</h3>
       <!--Optional Param(s): title, returns only book Titles-->
-      <form id="bookForm" action="/addBook" method="post">
+      <form id="bookForm" action="/addBook" method="get">
         <label for="author">Title: </label>
         <input id="titleField" type="text" name="title" />
-        <input type="submit" value="Add Book" />
 
       </form>
       <form id="userForm" action="/getBook" method="get">
@@ -193,11 +196,10 @@
     <section id="add">
       <h3>Get Authors</h3>
       <!--Optional Param(s): author, returns only book Authors-->
-      <form id="bookForm" action="/addBook" method="post">
+      <form id="bookForm" action="/addBook" method="get">
         <label for="author">Title: </label>
         <input id="authorField" type="text" name="title" />
 
-        <input type="submit" value="Add Book" />
 
       </form>
       <form id="userForm" action="/getBook" method="get">

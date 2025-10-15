@@ -77,12 +77,12 @@ const getAuthors = (request, response) => {
     const parsedUrl = url.parse(request.url, true);
 
     const { author } = parsedUrl.query;
-    
-  // Do a check for if each parameter is even there and then filter by if they include given string value
-  //because we sort by title we have to start filtering based on entries and them return an object from that
+
+    // Do a check for if each parameter is even there and then filter by if they include given string value
+    //because we sort by title we have to start filtering based on entries and them return an object from that
     const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
-    (!author || book.aut.includes(author))
-  ));
+      (!author || book.aut.includes(author))
+    ));
 
     return respondJSON(request, response, 200, results);
   }
@@ -99,12 +99,12 @@ const getTitles = (request, response) => {
     const parsedUrl = url.parse(request.url, true);
 
     const { title } = parsedUrl.query;
-    
-  // Do a check for if each parameter is even there and then filter by if they include given string value
-  //because we sort by title we have to start filtering based on entries and them return an object from that
+
+    // Do a check for if each parameter is even there and then filter by if they include given string value
+    //because we sort by title we have to start filtering based on entries and them return an object from that
     const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
-    (!title || tit.includes(title))
-  ));
+      (!title || tit.includes(title))
+    ));
 
     return respondJSON(request, response, 200, results);
   }
@@ -126,14 +126,14 @@ const getBook = (request, response) => {
     const parsedUrl = url.parse(request.url, true);
 
     const { author, title, year } = parsedUrl.query;
-    
-  // Do a check for if each parameter is even there and then filter by if they include given string value
-  //because we sort by title we have to start filtering based on entries and them return an object from that
+
+    // Do a check for if each parameter is even there and then filter by if they include given string value
+    //because we sort by title we have to start filtering based on entries and them return an object from that
     const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
-    (!author || book.aut.includes(author)) &&
-    (!title || tit.includes(title)) &&
-    (!year || book.yr === year)
-  ));
+      (!author || book.aut.includes(author)) &&
+      (!title || tit.includes(title)) &&
+      (!year || book.yr === year)
+    ));
 
     // checks each book and checks if it includes the
     // requested title and the genre/year range
@@ -145,7 +145,7 @@ const getBook = (request, response) => {
     //   return a < b ? -1 : a > b ? 1 : 0;
     // });
 
-    return respondJSON(request, response, 200, {results});
+    return respondJSON(request, response, 200, { results });
   }
 
   return respondJSON(request, response, 404, {
@@ -227,11 +227,11 @@ const addGenres = (request, response) => {
   }
 
   //checks if title is actually in the list
-  if(!booksMade[title]){
+  if (!booksMade[title]) {
     respondJSON.id = "Book doesn't exist";
     return respondJSON(request, response, 404, responseJSON)
   }
-  
+
   // default status code if updating existing
   const responseCode = 204;
   // add or update fields for this genre
