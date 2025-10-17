@@ -119,7 +119,6 @@ const getTitles = (request, response) => {
   });
 };
 
-
 // GET Request
 const getBook = (request, response) => {
   if (request.method === ('HEAD') || request.method === ('GET')) {
@@ -138,7 +137,6 @@ const getBook = (request, response) => {
         && (!title || tit.includes(title))
         && (!year || book.yr === year),
     ));
-
 
     return respondJSON(request, response, 200, { results });
   }
@@ -215,10 +213,8 @@ const addGenres = (request, response) => {
   // grab genres out of request.body, should be a title and a comma separated array of genres
   const { title, genre } = request.body;
 
-  const genreArray = genre?.split(',') || '';
-  //console.log(title, genre, genreArray);
-
-
+  const genreArray = genre.split(',');
+  // console.log(title, genre, genreArray);
 
   // check to make sure we have both fields
   if (genreArray.length === 0 || !title) {
@@ -229,7 +225,7 @@ const addGenres = (request, response) => {
   // checks if title is actually in the list
   if (!booksMade[title]) {
     responseJSON.id = "Book doesn't exist";
-    responseJSON.message = "Check list of titles or make your own";
+    responseJSON.message = 'Check list of titles or make your own';
     return respondJSON(request, response, 400, responseJSON);
   }
 

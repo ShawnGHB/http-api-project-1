@@ -23,7 +23,7 @@ const parseBody = (request, response, handler) => {
   request.on('end', () => {
     const bodyString = Buffer.concat(body).toString();
     request.body = query.parse(bodyString);
-    //console.log(bodyString);
+    // console.log(bodyString);
     // Now we can handle the parsed request like GET
     handler(request, response);
   });

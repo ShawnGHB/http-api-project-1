@@ -23,7 +23,7 @@ const getCSS = (request, response) => respond(request, response, css, 'text/css'
 
 const getJSON = (request, response) => respond(request, response, books, 'application/javascript');
 
-const getDoc = (request, response) => respond(request, response, index, 'text/html');
+const getDoc = (request, response) => respond(request, response, doc, 'text/html');
 
 module.exports.getIndex = getIndex;
 module.exports.getCSS = getCSS;
