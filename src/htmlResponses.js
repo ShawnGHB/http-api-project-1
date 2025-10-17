@@ -1,5 +1,6 @@
 const fs = require('fs');
 
+const doc = fs.readFileSync(`${__dirname}/../client/documentation.html`);
 const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const css = fs.readFileSync(`${__dirname}/../client/style.css`);
 const books = fs.readFileSync(`${__dirname}/../client/books.json`);
@@ -22,6 +23,9 @@ const getCSS = (request, response) => respond(request, response, css, 'text/css'
 
 const getJSON = (request, response) => respond(request, response, books, 'application/javascript');
 
+const getDoc = (request, response) => respond(request, response, index, 'text/html');
+
 module.exports.getIndex = getIndex;
 module.exports.getCSS = getCSS;
 module.exports.getJSON = getJSON;
+module.exports.getDoc = getDoc;

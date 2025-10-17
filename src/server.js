@@ -23,7 +23,7 @@ const parseBody = (request, response, handler) => {
   request.on('end', () => {
     const bodyString = Buffer.concat(body).toString();
     request.body = query.parse(bodyString);
-
+    //console.log(bodyString);
     // Now we can handle the parsed request like GET
     handler(request, response);
   });
@@ -35,6 +35,8 @@ const handlePost = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/addBook') {
     // Call our below parseBody handler
     parseBody(request, response, jsonHandler.addBook);
+  } else if (parsedUrl.pathname === '/addGenres') {
+    parseBody(request, response, jsonHandler.addGenres);
   }
 };
 
@@ -53,12 +55,12 @@ const handleGet = (request, response, parsedUrl) => {
     jsonHandler.notReal(request, response);
   } else if (parsedUrl.pathname === '/getTitles') {
     jsonHandler.getTitles(request, response);
-  } else if (parsedUrl.pathname === '/addGenres') {
-    jsonHandler.addGenres(request, response);
   } else if (parsedUrl.pathname === '/books.json') {
     htmlHandler.getJSON(request, response);
   } else if (parsedUrl.pathname === '/') {
     htmlHandler.getIndex(request, response);
+  } else if (parsedUrl.pathname === 'documentation') {
+    htmlHandler.getDoc(request, response);
   } else {
     jsonHandler.notReal(request, response);
   }

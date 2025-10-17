@@ -1,6 +1,6 @@
 // Read the book json file
 const fs = require('fs');
-//we'll need a url variable for our parameters
+// we'll need a url variable for our parameters
 const url = require('url');
 
 const books = JSON.parse(fs.readFileSync(`${__dirname}/../client/books.json`));
@@ -45,24 +45,23 @@ const respondJSON = (request, response, status, object) => {
   if (request.method !== 'HEAD' && status !== 204) {
     response.write(content);
   }
-  //console.log(response);
+  // console.log(response);
 
   response.end();
 };
 
 const getBookData = (request, response) => {
-  // gives generic data list we'll use to populate forms at startup
   // GET method
   if (request.method === ('GET') || request.method === ('HEAD')) {
-    const results = booksMade.map((book) => ({
+    const results = Object.values(booksMade).map((book) => ({
       author: book.aut,
       language: book.lan,
       titles: book.tit,
       years: book.yr,
-      books: book.gen,
+      genres: book.gen,
     }));
 
-    return respondJSON(request, response, 200, results);
+    return respondJSON(request, response, 200, { results });
   }
 
   return respondJSON(request, response, 404, {
@@ -78,13 +77,16 @@ const getAuthors = (request, response) => {
 
     const { author } = parsedUrl.query;
 
-    // Do a check for if each parameter is even there and then filter by if they include given string value
-    //because we sort by title we have to start filtering based on entries and them return an object from that
-    const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
-      (!author || book.aut.includes(author))
-    ));
+    // Do a check for if each parameter is
+    // even there and then filter by if they include given string value
+    // because we sort by title we have to
+    // start filtering based on entries and them return an object
+    // from that
+    const results = Object.values(booksMade).filter(
+      (book) => ((!author || book.aut.includes(author)) && !book.aut.includes('Unknown')),
+    ).map((bk) => bk.aut);
 
-    return respondJSON(request, response, 200, results);
+    return respondJSON(request, response, 200, { results });
   }
 
   return respondJSON(request, response, 404, {
@@ -100,13 +102,15 @@ const getTitles = (request, response) => {
 
     const { title } = parsedUrl.query;
 
-    // Do a check for if each parameter is even there and then filter by if they include given string value
-    //because we sort by title we have to start filtering based on entries and them return an object from that
-    const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
-      (!title || tit.includes(title))
-    ));
+    // Do a check for if each parameter is even there
+    // and then filter by if they include given string value
+    // because we sort by title we have to start filtering
+    // based on entries and them return an object from that
+    const results = Object.keys(booksMade).filter(
+      (tit) => (!title || tit.includes(title)),
+    );
 
-    return respondJSON(request, response, 200, results);
+    return respondJSON(request, response, 200, { results });
   }
 
   return respondJSON(request, response, 404, {
@@ -115,35 +119,26 @@ const getTitles = (request, response) => {
   });
 };
 
-// Taken code from "https://stackoverflow.com/questions/19259233/sorting-json-by-specific-element-alphabetically"
-// Stack Overflow
-// sorts aplhabetically into function
+
 // GET Request
 const getBook = (request, response) => {
   if (request.method === ('HEAD') || request.method === ('GET')) {
     // checks each book and see if it contains the title, year or author
-    //parse our params
+    // parse our params
     const parsedUrl = url.parse(request.url, true);
 
     const { author, title, year } = parsedUrl.query;
 
-    // Do a check for if each parameter is even there and then filter by if they include given string value
-    //because we sort by title we have to start filtering based on entries and them return an object from that
-    const results = Object.fromEntries(Object.entries(booksMade).filter(([tit, book]) =>
-      (!author || book.aut.includes(author)) &&
-      (!title || tit.includes(title)) &&
-      (!year || book.yr === year)
+    // Do a check for if each parameter is even
+    // there and then filter by if they include given string value
+    // because we sort by title we have to start
+    // filtering based on entries and them return an object from that
+    const results = Object.fromEntries(Object.entries(booksMade).filter(
+      ([tit, book]) => (!author || book.aut.includes(author))
+        && (!title || tit.includes(title))
+        && (!year || book.yr === year),
     ));
 
-    // checks each book and checks if it includes the
-    // requested title and the genre/year range
-
-    // results.sort((a, b) => {
-    //   a = a.title.toLowerCase();
-    //   b = b.title.toLowerCase();
-
-    //   return a < b ? -1 : a > b ? 1 : 0;
-    // });
 
     return respondJSON(request, response, 200, { results });
   }
@@ -161,7 +156,7 @@ const notReal = (request, response) => {
       id: 'notFound',
     };
 
-    return respondJSON(request, response, 404, results);
+    return respondJSON(request, response, 404, { results });
   }
 
   return respondJSON(request, response, 404, {});
@@ -190,9 +185,9 @@ const addBook = (request, response) => {
     // Set the status code to 201 (created) and create an empty user
     responseCode = 201;
     booksMade[title] = {
-      'tit': title,
-      'yr': year,
-      'aut': author,
+      tit: title,
+      yr: year,
+      aut: author,
     };
   }
 
@@ -218,24 +213,30 @@ const addGenres = (request, response) => {
   };
 
   // grab genres out of request.body, should be a title and a comma separated array of genres
-  const { title, gens } = request.body;
+  const { title, genre } = request.body;
+
+  const genreArray = genre?.split(',') || '';
+  //console.log(title, genre, genreArray);
+
+
 
   // check to make sure we have both fields
-  if (gens.length === 0 || !title) {
+  if (genreArray.length === 0 || !title) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  //checks if title is actually in the list
+  // checks if title is actually in the list
   if (!booksMade[title]) {
-    respondJSON.id = "Book doesn't exist";
-    return respondJSON(request, response, 404, responseJSON)
+    responseJSON.id = "Book doesn't exist";
+    responseJSON.message = "Check list of titles or make your own";
+    return respondJSON(request, response, 400, responseJSON);
   }
 
   // default status code if updating existing
   const responseCode = 204;
   // add or update fields for this genre
-  booksMade[title].gen = gens;
+  booksMade[title].gen = genreArray;
 
   // if response is created, then set our created message
   // and sent response with a message

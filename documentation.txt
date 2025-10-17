@@ -1,0 +1,28 @@
+What dataset are you using?
+Book dataset
+
+● What went right in the development of this project?
+- Working with server side isn't difficult and the actual working in it was simple. 
+- The data returns the values requested by it with ease.
+
+
+● What went wrong in the development of this project?
+- I couldn't understand why my head Requests weren't fetching in the Network tab, but they seemed to be set up correctly. 
+I tried researching it, but it does seem to process correctly since it follows the same track as GET does.
+
+- Figuring out how to order my JSON object in a way that read nicely for the user yet still parsed easily was difficult.
+
+● What did you learn while developing this project?
+- I learned that client side applications still require heavy setup and it really is a conversation. 
+I think prior assignments dulled me to the effort that goes into building a nice client side application. 
+
+- I learned how to process URL parameters on the server side of things.
+
+- I learned critical function mapping skills I'll need in the future.
+
+● If you went above and beyond, how did you do so?
+N/A
+
+● If you used any borrowed code or code fragments, where did you get them from?
+What do the code fragments do? Where are they in your code?
+- There is a stack overflow bit of code that I modified to help alphabetically sort the dataset as it returns. I felt it was more intuitive that way.
